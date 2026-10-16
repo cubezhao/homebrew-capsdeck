@@ -1,0 +1,46 @@
+name: Validate Manifests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # Option A — full Scoop validation via the official Bucket Minion action.
+  # Installs Scoop and runs the standard bucket test suite.
+  scoop-action:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scoop Bucket Minion
+        uses: ScoopInstaller/GithubActions@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Option B — lightweight JSON-schema sanity check (always green, no Scoop needed).
+  # Useful as a fallback if the Bucket Minion action fails on non-standard layouts.
+  json-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON manifests
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem bucket/*.json | ForEach-Object {
+            Write-Host "Validating $($_.Name)..."
+            try {
+              $manifest = Get-Content $_.FullName -Raw | ConvertFrom-Json
+              if (-not $manifest.version)   { throw "missing 'version'" }
+              if (-not $manifest.homepage)   { throw "missing 'homepage'" }
+              if (-not $manifest.description){ throw "missing 'description'" }
+              Write-Host "  OK"
+            } catch {
+              Write-Host "  FAIL: $_" -ForegroundColor Red
+              $failed = $true
+            }
+          }
+          if ($failed) { exit 1 }

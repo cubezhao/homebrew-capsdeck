@@ -1,0 +1,25 @@
+name: Cask Audit
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  audit:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Audit cask
+        # sha256 :no_check is valid for casks without a stable release yet.
+        # If brew audit rejects it in the future, add `continue-on-error: true`
+        # here and open an issue to provide real checksums.
+        run: brew audit --cask --strict ./Casks/capsdeck.rb
+
+      - name: Style check
+        run: brew style ./Casks/capsdeck.rb

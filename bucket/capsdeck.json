@@ -1,0 +1,35 @@
+{
+    "version": "0.1.0",
+    "description": "Remap CapsLock into a powerful modifier layer",
+    "homepage": "https://github.com/cubezhao/homebrew-capsdeck",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cubezhao/homebrew-capsdeck/releases/download/v0.1.0/CapsDeck_0.1.0_x64-setup.exe#/setup.exe",
+            "hash": "TODO_REPLACE_WITH_SHA256_AFTER_RELEASE"
+        }
+    },
+    "installer": {
+        "script": "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' -Wait"
+    },
+    "uninstaller": {
+        "script": "Start-Process \"$env:LOCALAPPDATA\\CapsDeck\\uninstall.exe\" -ArgumentList '/S' -Wait"
+    },
+    "shortcuts": [
+        [
+            "CapsDeck.exe",
+            "CapsDeck"
+        ]
+    ],
+    "notes": "After installing, launch CapsDeck from the Start Menu. The app runs in the system tray.",
+    "checkver": {
+        "github": "https://github.com/cubezhao/homebrew-capsdeck"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cubezhao/homebrew-capsdeck/releases/download/v$version/CapsDeck_$version_x64-setup.exe#/setup.exe"
+            }
+        }
+    }
+}
